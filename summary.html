@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Summary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">📋 Project Overview</h1>
+            <h2 class="subtitle">An attendance program for Quantum Martial Arts</h2>
+
+            <div class="box">
+                <h3 class="title is-4">Setting up The Project</h3>
+                <p>This project uses Docker for local development.</p>
+                <pre><code>docker compose build
+docker compose up -d
+make setup_db</code></pre>
+                <p>You can check the logs by running <code>docker compose logs</code> or <code>docker compose logs -f</code> to attach to the logs and follow the output.</p>
+                <p>You should now be able to access the app on your local machine by going to <a href="http://localhost:3000">http://localhost:3000</a>.</p>
+            </div>
+
+            <div class="box">
+                <h3 class="title is-4">License</h3>
+                <p>The MIT License (MIT)</p>
+                <pre><code>Copyright (c) 2015 Alex
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+            </div>
+
+            <div class="box">
+                <h3 class="title is-4">Dockerfile</h3>
+                <pre><code>FROM ruby:3.1
+
+RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
+RUN mkdir /app
+
+WORKDIR /app
+
+COPY Gemfile* /app/
+
+RUN gem install bundler && bundle install --with=development
+
+COPY . /app
+
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
+EXPOSE 3000
+
+# Start the main process.
+CMD ["rails", "server", "-b", "0.0.0.0"]</code></pre>
+            </div>
+
+            <div class="box">
+                <h3 class="title is-4">Gemfile</h3>
+                <pre><code>source 'https://rubygems.org'
+
+# Core gems
+ruby '3.1.4'
+gem 'rails', '~> 6.0.0'
+gem 'pg', '~> 0.21'
+gem 'puma' # web server
+gem 'sassc-rails'
+
+# Utilities
+gem 'dotenv-rails', :groups => [:development, :test]
+gem 'fileutils'
+gem 'openssl'
+
+gem 'rails_12factor', group: :production
+
+# Frontend
+
+gem 'coffee-rails'
+gem 'jquery-rails'
+gem 'jquery-tablesorter'
+gem 'react-rails'
+gem 'twitter-bootstrap-rails'
+gem 'twitter-typeahead-rails'
+gem 'bootstrap-validator-rails'
+gem 'haml'
+gem 'turbolinks'
+gem 'jbuilder', '~> 2.0'
+gem 'will_paginate', '~> 3.1'
+gem 'quiet_safari'
+
+group :development do
+  gem 'erb2haml'
+  gem 'listen'
+  gem 'rspec'
+end</code></pre>
+            </div>
+
+            <div class="box">
+                <h3 class="title is-4">Makefile</h3>
+                <pre><code>.PHONY: test seed
+
+test:
+	docker compose run --rm web bundle exec rspec
+
+seed:
+	docker compose run --rm web bundle exec rake db:seed
+
+setup_db:
+	docker compose run --rm web ./bin/rake db:setup
+	docker compose run --rm web ./bin/rake db:migrate
+	docker compose run --rm web ./bin/rake db:seed
+
+migrate:
+	docker compose run --rm web ./bin/rake db:migrate</code></pre>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

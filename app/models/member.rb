@@ -2,7 +2,7 @@ class Member < ApplicationRecord
   belongs_to :belt
   belongs_to :school
   has_many :meeting_members
-  has_many :meetings, through: :meeting_members
+  has_many :meetings, through: :meeting_members, source: :meeting
 
   # default_scope { where(is_active: true) }
 
@@ -13,14 +13,14 @@ class Member < ApplicationRecord
     members = []
 
     # We prioritize belt names over users
-    belts = Belt.where("name ILIKE '%#{query}%'")
+    belts = Belt.where("name ILIKE '%"){query}%'")
 
     belts.each do |belt|
       members = members + belt.members
       members.delete_if{|mem| mem.is_active != active}
     end
 
-    members += Member.where("first_name ILIKE '%#{query}%' OR last_name ILIKE '%#{query}%'").where(is_active: active)
+    members += Member.where("first_name ILIKE '%"){query}%'") OR last_name ILIKE '%"){query}%'").where(is_active: active)
 
     members
   end
